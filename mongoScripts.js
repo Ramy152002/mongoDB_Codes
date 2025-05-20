@@ -226,8 +226,7 @@ curl --location --request POST 'https://data.mongodb-api.com/app/<Data API App I
 db.createCollection("posts", {
   validator: {
     $jsonSchema: {
-      bsonType: "object",
-      required: [ "title", "body" ],
+      bsonType: "object", required: [ "title", "body" ],
       properties: {
         title: { bsonType: "string", description: "Title of post - Required." },
         body: { bsonType: "string", description: "Body of post - Required." },
@@ -239,3 +238,26 @@ db.createCollection("posts", {
     }
   }
 })
+
+
+db.comments.aggregate([
+{$lookup: {from: "movies", localField: "movie_id", foreignField: "_id",as: "movie_details",},},
+{$limit: 1}])
+
+db.createCollection("validschemaa",{
+validator:{
+$jsonSchema:{
+bsonType:'object',required:['title','price'],
+properties:{
+title:{bsonType:"string",description:"description"}
+}
+}
+}
+
+})
+//search index
+db.movies.aggregate([
+{$search: {index: "default", 
+// optional unless you named your index something other than "default"
+text: {query: "star wars",path: "title"},},},
+  {$project: {title: 1,year: 1,}}])
